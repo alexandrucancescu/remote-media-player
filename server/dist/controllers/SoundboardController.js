@@ -25,19 +25,49 @@ class SoundboardController extends SocketController_1.default {
         return __awaiter(this, void 0, void 0, function* () {
             this.soundBoardService = new SoundboardService_1.default();
             yield this.soundBoardService.init();
+            this.soundBoardService.on("sounds-changed", this.onSoundsChanged.bind(this));
         });
     }
     connection(socket) { }
     disconnect(socket) { }
-    playSound(socket, sound) {
-        console.log("play_sound", sound);
+    onSoundsChanged(sounds) {
+        this.namespace.emit("sounds-changed", sounds);
+    }
+    playSound(socket, sound, response) {
+        return __awaiter(this, void 0, void 0, function* () {
+            console.log("play_sound", sound);
+            if (!this.soundBoardService.hasSound(sound)) {
+                return response({ ok: false, err: "Sound does not exist" });
+            }
+            try {
+                yield this.soundBoardService.playSound(sound);
+                response({ ok: true });
+            }
+            catch (err) {
+                response({ ok: false, err });
+            }
+        });
+    }
+    getSounds(socket, ignored_payload, response) {
+        return __awaiter(this, void 0, void 0, function* () {
+            response({
+                ok: true,
+                payload: this.soundBoardService.soundNames
+            });
+        });
     }
 }
 __decorate([
-    SocketController_1.on("play_sound"),
+    SocketController_1.on("soundboard/play_sound"),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, String]),
-    __metadata("design:returntype", void 0)
+    __metadata("design:paramtypes", [Object, String, Function]),
+    __metadata("design:returntype", Promise)
 ], SoundboardController.prototype, "playSound", null);
+__decorate([
+    SocketController_1.on("soundboard/play_sound"),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object, Function]),
+    __metadata("design:returntype", Promise)
+], SoundboardController.prototype, "getSounds", null);
 exports.default = SoundboardController;
 //# sourceMappingURL=SoundboardController.js.map
