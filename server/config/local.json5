@@ -1,0 +1,8 @@
+{
+  port: 3001,
+  soundboard_dir: "/Users/andu/Music/soundboard_sounds",
+  spotify: {
+    client_id:"c11b5adcb6654b2f9a6736916ed4d9ec",
+    client_secret: "20e549607aba4382bf1be32f7a2a5212"
+  }
+}
